@@ -92,3 +92,4 @@ print(pathIndex)
 permuteCityList = permutations(cityList)
 printPermuteListIndex(permuteCityList,pathIndex)
 print("is the shortest path and has a weight of",minCost)
+
