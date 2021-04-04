@@ -107,16 +107,23 @@ game.printBoard()
 
 while(gameLoop):
     print()
+    """
+    Human Player
     print("Player1 Select your move")
     player1Row = input("Row: ")
     player1Col = input("Col: ")
     print()
-
+    """
+    player1Row, player1Col = randomPlayerMove()
     validMove = game.makeMove(player1Row,player1Col,PLAYER1ICON) # Make Player 1 Move 
     while(validMove == 0):
+        """
+        Human Player
         print("Invalid Move... Try again")
         player1Row = input("Row: ")
         player1Col = input("Col: ")
+        """
+        player1Row, player1Col = randomPlayerMove()
         validMove = game.makeMove(player1Row,player1Col,PLAYER1ICON) 
 
     game.printBoard() # print state of gameboard after player1's move
@@ -156,4 +163,4 @@ while(gameLoop):
         print()
         gameLoop = False
         exit()
-   
+    
