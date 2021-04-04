@@ -80,87 +80,117 @@ def randomPlayerMove():
     return row,col
 
 
-# Entry Point
-game = TTTBoard(3,3) # 2,2 is the bottom right corner
-
-PLAYER1ICON = "X"
-PLAYER2ICON = "O"
-
-"""
-#Testing Win Conditions
-game.makeMove(1,1,PLAYER1ICON)
-game.makeMove(0,1,PLAYER1ICON)
-game.makeMove(2,1,PLAYER1ICON)
-
-print(game.printBoard())
-
-print(game.checkWin(PLAYER1ICON))
-
-#Testing Random Player
-randomRow, randomCol = randomPlayerMove()
-print("Random Row: ",randomRow)
-print("Random Col: ",randomCol)
-"""
-gameLoop = True
-moveCount = 0
-game.printBoard()
-
-while(gameLoop):
-    print()
-    """
-    Human Player
-    print("Player1 Select your move")
-    player1Row = input("Row: ")
-    player1Col = input("Col: ")
-    print()
-    """
-    player1Row, player1Col = randomPlayerMove()
-    validMove = game.makeMove(player1Row,player1Col,PLAYER1ICON) # Make Player 1 Move 
-    while(validMove == 0):
-        """
-        Human Player
-        print("Invalid Move... Try again")
-        player1Row = input("Row: ")
-        player1Col = input("Col: ")
-        """
-        player1Row, player1Col = randomPlayerMove()
-        validMove = game.makeMove(player1Row,player1Col,PLAYER1ICON) 
-
-    game.printBoard() # print state of gameboard after player1's move
-
-    if(game.checkWin(PLAYER1ICON) == "X"):
-        print()
-        print("Player 1 has won the game")
-        print()
-        gameLoop = False
-        exit()
+def playTTTGame(mode):
+    PLAYER1ICON = "X"
+    PLAYER2ICON = "O"
     
-    print("Player2's move:")
-    player2Row, player2Col = randomPlayerMove()
-    
-    validMove = game.makeMove(player2Row,player2Col,PLAYER2ICON)
-    while(validMove == 0):
-        player2Row, player2Col = randomPlayerMove()
+    game = TTTBoard(3,3)
+    gameLoop = True
+    moveCount = 1
+    game.printBoard()
+
+    while(gameLoop):
+        print()
+        print("Player 1's Move")
+        print()
+        if(mode == 1 or mode == 2):
+            player1Row = int(input("Enter Row: "))
+            player1Col = int(input("Enter Column: "))
+        if(mode == 3): 
+            # Random Player Move
+            player1Row, player1Col = randomPlayerMove()
+        
+        validMove = game.makeMove(player1Row,player1Col,PLAYER1ICON) # Make Player 1 Move
+        while(validMove == 0):
+            if(mode == 1 or mode == 2):
+                print("Invalid Move... Enter another move")
+                player1Row = int(input("Enter Row: "))
+                player1Col = int(input("Enter Column: "))
+            if(mode == 3):
+                player1Row, player1Col = randomPlayerMove()
+
+            validMove = game.makeMove(player1Row,player1Col,PLAYER1ICON)
+
+        moveCount += 1
+        game.printBoard() # print state of gameboard after player1's move
+
+        if(moveCount >= 5 and game.checkWin(PLAYER1ICON) == "X"): # Check to see if x has one
+            print()
+            print("Player 1 has won the game")
+            print()
+            gameLoop = False
+            exit()
+
+        if(moveCount >= 10):
+            print()
+            print("The game has ended in a tie")
+            print()
+            gameLoop = False
+            exit()
+        
+        print()
+        print("Player 2's Move")
+        print()
+        if(mode == 1):
+            player2Row = int(input("Enter Row: "))
+            player2Col = int(input("Enter Column: "))
+        if(mode == 2 or mode == 3):
+            player2Row, player2Col = randomPlayerMove()
+
         validMove = game.makeMove(player2Row,player2Col,PLAYER2ICON)
-    
-    print("Row: ",player2Row)
-    print("Col: ",player2Col)
+
+        while(validMove == 0):
+            if(mode == 1):
+                print("Invalid Move... Enter another move")
+                player2Row = int(input("Enter Row: "))
+                player2Col = int(input("Enter Column"))
+            if(mode == 2 or mode == 3):
+                player2Row, player2Col = randomPlayerMove()
+
+            validMove = game.makeMove(player2Row,player2Col,PLAYER2ICON)
+
+        if(mode == 2 or mode == 3):
+            print("Row: ",player2Row)
+            print("Col: ",player2Col)
+            print()
+
+        moveCount += 1
+        game.printBoard() # print state of gameboard after player2's move
+
+        if(moveCount >= 6 and game.checkWin(PLAYER2ICON) == "O"):
+            print()
+            print("Player 2 have won the game")
+            print()
+            gameLoop = False
+            exit()
+
+
+# Entry Point
+modeDict = {"1": "Player 1 vs Player 2", "2": "Player 1 vs Random AI", "3": "Random AI vs Random AI"}
+"""
+mode 1: Human Player vs Human Player
+mode 2: Human Player vs Random AI
+mode 3: Random AI vs Random AI
+"""
+
+print()
+print("=================================================")
+print("Welcome to TicTacToe Implemented with Python CLI!")
+print("=================================================")
+print()
+
+mode = "0"
+while(mode != "1" and mode != "2" and mode != "3"):
+    print("How would you like to play?")
+    print()
+    print("(1) Player 1   vs  Player 2")
+    print("(2) Player 1   vs  Random AI")
+    print("(3) Random AI  vs  Random AI")
+    print()
+    mode = input("Enter Mode: ")
     print()
 
-    gameLoop += 1
-    game.printBoard() # print state of gameboard after player2's move 
+print("TicTacToe starting in",modeDict[mode])
 
-    if(game.checkWin(PLAYER2ICON) == "O"):
-        print()
-        print("Player 2 have won the game") 
-        print()
-        gameLoop = False
-        exit()
+playTTTGame(int(mode))
 
-    if(moveCount == 9):
-        print()
-        print("The game has ended in a tie") 
-        print()
-        gameLoop = False
-        exit()
-    
