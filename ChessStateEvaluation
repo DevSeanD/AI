@@ -114,110 +114,11 @@ string evaluatePieceAdvantage(int* pieceCountArr)
 
 	for(int c = 0; c <= 11; c++)
 	{
-			if(pieceCountArr[c] == pieceCountArr[c+1])
-			{
-				// pieces cancel each other out
-			}
-			else
-			{
-				bTotal += pieceCountArr[c] * pieceValArr[valCount];
-				c++;
-				wTotal += pieceCountArr[c] * pieceValArr[valCount];
-				valCount++;
-			}
+		bTotal += pieceCountArr[c] * pieceValArr[valCount];
+		c++;
+		wTotal += pieceCountArr[c] * pieceValArr[valCount];
+		valCount++;
 	}
-	if(bTotal > wTotal)
-	{
-		return "Black has the piece based advantage";
-	}
-	if(wTotal > bTotal)
-	{
-		return "White has the piece based advantage";
-	}
-	if(wTotal == bTotal)
-	{
-		return "Neither player has an advantage";
-	}
-	else
-	{
-		return "Evaluation function failed";
-	}
-}
-
-string evaluateSquareAdvantage(string gameFileName)
-{// decide which player has the advantage based on pieces
-	int bTotal = 0; // black total
-	int wTotal = 0;	// white Total
-	fstream gameState;
-	gameState.open(gameFileName,ios::in); //open game state file to be read
-
-	if(gameState.is_open()){   //verify game state file is open
-		string space;
-		char temp;
-		int row = 0;
-
-    while(getline(gameState, space)){ //read game state from file
-			// need to loop through each char in space and compare each to piece id
-			for(int c = 0;c <= 7; c++)
-			{
-				temp = space[c];
-				if(row == 0 or row == 7)
-				{
-					// pawn is not worth anything
-				}
-				if(row == 1)
-				{// entire row 1 is worth 50
-					if(space[c] = 'P')
-					{
-						bTotal += 50;
-					}
-					if(space[c] = 'p')
-					{
-						wTotal += 50;
-					}
-				}
-				if(row == 2)
-				{
-					if(c == 0 || c == 1 || c == 6 || c == 7)
-					{
-						if(space[c] = 'P')
-						{
-							bTotal += 10;
-						}
-						if(space[c] = 'p')
-						{
-							wTotal += 10;
-						}
-					}
-					if(c == 2 || c == 5)
-					{
-						if(space[c] = 'P')
-						{
-							bTotal += 20;
-						}
-						if(space[c] = 'p')
-						{
-							wTotal += 20;
-						}
-					}
-					if(c == 3 || c == 4)
-					{
-						if(space[c] = 'P')
-						{
-							bTotal += 20;
-						}
-						if(space[c] = 'p')
-						{
-							wTotal += 20;
-						}
-					}
-				}
-			}
-			row++;
-  	}
-		gameState.close(); //close the file object.
-  }
-	cout << "Black: " << bTotal << "  " << " White: " << wTotal << endl;
 
 	if(bTotal > wTotal)
 	{
@@ -237,17 +138,24 @@ string evaluateSquareAdvantage(string gameFileName)
 	}
 }
 
-int main()
+
+int main(int argc, char** argv)
 {
+	string requestedFile;
 	int* pieceNumCount;
-	pieceNumCount = readGameState("ChessFile.txt");
+	string pieceResult;
+	if(argv[1])
+	{
+		requestedFile = argv[1];
+		pieceNumCount = readGameState(requestedFile);
 
-	// displayCountState(pieceNumCount);
-
-	string pieceResult = evaluatePieceAdvantage(pieceNumCount);
-	cout << pieceResult << endl;
-
-	string squareResult = evaluateSquareAdvantage("ChessFile.txt");
-	cout << pieceResult << endl;
+		pieceResult = evaluatePieceAdvantage(pieceNumCount);
+		cout << pieceResult << endl;
+	}
+	else
+	{
+		cout << "Incorrect arguments..." << endl;
+		cout << "Ex: ./ChessEvaluation.o *CHESS_FILE_NAME*" << endl;
+	}
 	return 0;
 }
