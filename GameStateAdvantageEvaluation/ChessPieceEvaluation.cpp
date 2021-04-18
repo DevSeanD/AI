@@ -14,52 +14,52 @@ using namespace std;
 // Total number of each piece and corresponding array indices:
 // 	P&p - 16 | array index - P = 0;  p = 1
 //	B&b - 4  | array index - B = 2;  b = 3
-//  N&n - 4	 | array index - N = 4;  n = 5
-//  R&r - 4	 | array index - R = 6;  r = 7
-//  K&k - 2	 | array index - K = 8;  k = 9
+//  	N&n - 4	 | array index - N = 4;  n = 5
+//  	R&r - 4	 | array index - R = 6;  r = 7
+//  	K&k - 2	 | array index - K = 8;  k = 9
 //	Q&q - 2	 | array index - Q = 10; q = 11
 //
 // Source of values: https://www.chessprogramming.org/Simplified_Evaluation_Function
 
-void updateArr(char currentChar,int pieceArr[])
+void updateArr(char currentChar,int bPieceArr[],int wPieceArr[])
 {//update array based on the number of each piece in the game state
 	switch(int(currentChar)) //ascii code of char
 	{
 		case 80:
-			pieceArr[0]++;
+			bPieceArr[0]++;
 			break;
 		case 112:
-			pieceArr[1]++;
+			wPieceArr[0]++;
 			break;
 		case 66:
-			pieceArr[2]++;
+			bPieceArr[1]++;
 			break;
 		case 98:
-			pieceArr[3]++;
+			wPieceArr[1]++;
 			break;
 		case 78:
-			pieceArr[4]++;
+			bPieceArr[2]++;
 			break;
 		case 110:
-			pieceArr[5]++;
+			wPieceArr[2]++;
 			break;
 		case 82:
-			pieceArr[6]++;
+			bPieceArr[3]++;
 			break;
 		case 114:
-			pieceArr[7]++;
+			wPieceArr[3]++;
 			break;
 		case 75:
-			pieceArr[8]++;
+			bPieceArr[4]++;
 			break;
 		case 107:
-			pieceArr[9]++;
+			wPieceArr[4]++;
 			break;
 		case 81:
-			pieceArr[10]++;
+			bPieceArr[5]++;
 			break;
 		case 113:
-			pieceArr[11]++;
+			wPieceArr[5]++;
 			break;
 	}
 }
@@ -72,33 +72,30 @@ void displayCountState(int* gameStateArr)
 	}
 }
 
-int* readGameState(string gameFileName)
-{// returns array containing # of each piece in a given file
+void readGameState(string gameFileName,int bPieceArr[],int wPieceArr[])
+{// returns array containing # of each piece in a given game state file
 	fstream gameState;
-	int* pieceCount = new int[11]; // create a pointer that points to an array of size 11
+	//int* bPieceCount = new int[5]; // create a pointer that points to an array of size 5
+	//int* wPieceCount = new int[5]; // create a pointer that points to an array of size 5
 
-	for(int i = 0; i <= 11; i++) //init each index in the array to hold a value of 0
-	{
-		pieceCount[i] = 0;
-	}
   gameState.open(gameFileName,ios::in); //open game state file to be read
 
   if(gameState.is_open()){   //verify game state file is open
 		string space;
 		char temp;
     while(getline(gameState, space)){ //read game state from file
+			cout << space << endl;
 			// need to loop through each char in space and compare each to piece id
 			for(int c = 0;c <= 7; c++){
 				temp = space[c];
-				updateArr(temp,pieceCount);
+				updateArr(temp,bPieceArr,wPieceArr);
 			}
   	}
 		gameState.close(); //close the file object.
   }
-	return pieceCount; // return the array pointer
 }
 
-string evaluatePieceAdvantage(int* pieceCountArr)
+float evaluatePieceAdvantage(int* bPieceArr,int* wPieceArr)
 {// decide which player has the advantage based on pieces
 	int bTotal = 0; // black total
 	int wTotal = 0;	// white Total
@@ -112,50 +109,42 @@ string evaluatePieceAdvantage(int* pieceCountArr)
 	pieceValArr[4] = 20000; // kings
 	pieceValArr[5] = 900; // queens
 
-	for(int c = 0; c <= 11; c++)
+	for(int c = 0; c <= 5; c++)
 	{
-		bTotal += pieceCountArr[c] * pieceValArr[valCount];
-		c++;
-		wTotal += pieceCountArr[c] * pieceValArr[valCount];
-		valCount++;
+		bTotal += bPieceArr[c] * pieceValArr[c];
+		wTotal += wPieceArr[c] * pieceValArr[c];
 	}
 
-	if(bTotal > wTotal)
-	{
-		return "Black has the piece based advantage";
-	}
-	if(wTotal > bTotal)
-	{
-		return "White has the piece based advantage";
-	}
-	if(wTotal == bTotal)
-	{
-		return "Neither player has an advantage";
-	}
-	else
-	{
-		return "Evaluation function failed";
-	}
+	cout << "White: " << wTotal << endl;
+	cout << "Black: " << bTotal << endl;
+	return bTotal - wTotal; // returning heuristic
 }
-
 
 int main(int argc, char** argv)
 {
 	string requestedFile;
-	int* pieceNumCount;
-	string pieceResult;
+	int wPieceNumCount[5]; // white piece count array
+	int bPieceNumCount[5]; // black piece count array
+	float  pieceResult;
+
+	for(int i = 0; i <= 5; i++) //init each index in the arrays to hold a value of 0
+	{
+		bPieceNumCount[i] = 0;
+		wPieceNumCount[i] = 0;
+	}
+
 	if(argv[1])
 	{
 		requestedFile = argv[1];
-		pieceNumCount = readGameState(requestedFile);
-
-		pieceResult = evaluatePieceAdvantage(pieceNumCount);
-		cout << pieceResult << endl;
+		readGameState(requestedFile,bPieceNumCount,wPieceNumCount);
+		pieceResult = evaluatePieceAdvantage(bPieceNumCount,wPieceNumCount);
+		// purely for read ability for this program. The result returned by evaluation function is a float and NOT a string
+		cout << "Black's piece based advantage: " << pieceResult << endl;
 	}
 	else
 	{
 		cout << "Incorrect arguments..." << endl;
-		cout << "Ex: ./ChessEvaluation.o *CHESS_FILE_NAME*" << endl;
+		cout << "Usage: ./ChessEvaluation.o *CHESS_FILE_NAME*" << endl;
 	}
 	return 0;
 }
