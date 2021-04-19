@@ -213,7 +213,7 @@ def c4Eval1(state): # Eval function that takes into consideration both value loc
     if(bValTotal > rValTotal):
         print("Black has the avantage of",bValTotal,"to",rValTotal)
     if(bValTotal == rValTotal):
-        print("Neither player has the advantage")
+         print("Neither player has the advantage")
 
     # heuristic from the point of view of black player
     return bValTotal - rValTotal
@@ -221,18 +221,27 @@ def c4Eval1(state): # Eval function that takes into consideration both value loc
 #Entry Point
 print("Welcome to Connect4 Python!")
 print()
-print("What would you like to do?")
-print("1. Player 1 vs Player 2")
-print("2. Evaluate Game State File")
-choice = input()
+inputLoop = True
+while(inputLoop == True):
+    print()
+    print("What would you like to do?")
+    print("1. Player 1 vs Player 2")
+    print("2. Evaluate Game State File")
+    choice = input()
+    if choice == '1' or choice == '2':
+        inputLoop = False
 
 if choice == '1':
+    inputLoop = True
     print("Player vs Player mode!")
-    print()
-    print("Which Evaluation function would you like to use?")
-    print("1. Location Based Value")
-    print("2. Location Based Value and Sequence Based Value")
-    evalChoice = input()
+    while(inputLoop == True):
+        print()
+        print("Which Evaluation function would you like to use?")
+        print("1. Location Based Value")
+        print("2. Location Based Value and Sequence Based Value")
+        evalChoice = input()
+        if evalChoice == '1' or evalChoice == '2':
+            inputLoop = False
 
     P1 = 'B' # player 1
     P2 = 'R' # player 2
@@ -245,7 +254,7 @@ if choice == '1':
         print()
         print("Player 1's Turn")
         valid = False
-        while(valid != True): # loops while a valid input is not provided
+        while(valid != True): # loops while valid input is not provided
             player1Move = int(input("Enter a Column "))
             valid = c4GameBoard.isOpen(player1Move)
 
@@ -299,6 +308,18 @@ if choice == '2':
 
     print("Game State Evalutation mode!")
     print()
+    
+    inputLoop = True
+    while(inputLoop == True):
+        print()
+        print("Which Evaluation function would you like to use?")
+        print("1. Location Based Value")
+        print("2. Location Based Value and Sequence Based Value")
+        evalChoice = input()
+        if evalChoice == '1' or evalChoice == '2':
+            inputLoop = False
+
+    print()
     fileName = input("What is the file name? ")
 
     board = []
@@ -317,5 +338,9 @@ if choice == '2':
             playerMove = not playerMove # change turn
 
     c4GameBoard.printGameBoard()
-    c4Eval(c4GameBoard.gameBoard) # prints evaluation results
+    if evalChoice == '2':
+        c4Eval1(c4GameBoard.gameBoard) # prints evaluation results
+    if evalChoice == '1':
+        c4Eval(c4GameBoard.gameBoard) # prints evaluation results
+
     exit()
